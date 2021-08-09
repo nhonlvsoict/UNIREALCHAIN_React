@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using UNIREALCHAIN_React.Helpers;
 using UNIREALCHAIN_React.Hubs;
+using UNIREALCHAIN_React.Services;
 
 namespace UNIREALCHAIN_React
 {
@@ -40,6 +42,9 @@ namespace UNIREALCHAIN_React
                         .AllowCredentials();
                 });
             });
+
+            services.AddSingleton<IUserConnectionManager, UserConnectionManager>();
+            /*services.AddSingleton<RealtimeValuesService>();*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
