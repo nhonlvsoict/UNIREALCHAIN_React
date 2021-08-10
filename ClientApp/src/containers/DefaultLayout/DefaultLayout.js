@@ -42,7 +42,7 @@ class DefaultLayout extends Component {
           </Suspense>
         </AppHeader>
         <div className="app-body">
-          <AppSidebar fixed display="lg">
+          <AppSidebar fixed  hide>
             <AppSidebarHeader />
             <AppSidebarForm />
             <Suspense>
@@ -68,7 +68,7 @@ class DefaultLayout extends Component {
                         )} />
                     ) : (null);
                   })}
-                  <Redirect from="/" to="/dashboard" />
+                  <Redirect from="/" to="/data-visualize" />
                 </Switch>
               </Suspense>
             </Container>

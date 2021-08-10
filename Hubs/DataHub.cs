@@ -17,7 +17,7 @@ namespace UNIREALCHAIN_React.Hubs
 
     public class DataHub : Hub
     {
-        private Dictionary<string, RealtimeValuesService>  _realtimeValuesService = new Dictionary<string, RealtimeValuesService>();
+        
         private readonly IUserConnectionManager _userConnectionManager;
 
         public DataHub(IUserConnectionManager userConnectionManager)
@@ -30,24 +30,35 @@ namespace UNIREALCHAIN_React.Hubs
             CancellationToken cancellationToken
            )
         {
-            _userConnectionManager.KeepUserConnection(symbol, Context.ConnectionId);
-            if (!_realtimeValuesService.ContainsKey(symbol))
+            try
             {
-                _realtimeValuesService[symbol] = new RealtimeValuesService(symbol);
+                string connectionId = Context.ConnectionId;
+                _userConnectionManager.KeepSymbolConnection(symbol, connectionId);
+                if (!_userConnectionManager.RealtimeValuesService.ContainsKey(symbol))
+                {
+                    _userConnectionManager.RealtimeValuesService[symbol] = new RealtimeValuesService(symbol, cancellationToken);
+                }
+                cancellationToken.Register((dynamic obj) =>
+                {
+                    //get the connectionId
+                    _userConnectionManager.SymbolUnmornitor(obj.connectionId, obj.symbol);
+                }, new { symbol, connectionId });
+               
+                return _userConnectionManager.RealtimeValuesService[symbol].Observe()
+                    .ToBufferedStream(cancellationToken);
             }
-            return _realtimeValuesService[symbol].Observe()
-                .ToNewestValueStream(Context.ConnectionAborted);
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
         //Called when a connection with the hub is terminated.
         public async override Task OnDisconnectedAsync(Exception exception)
         {
             //get the connectionId
             var connectionId = Context.ConnectionId;
-            _userConnectionManager.RemoveUserConnection(connectionId, out string unmonitorSymbol);
-            if (unmonitorSymbol != "")
-            {
-                _realtimeValuesService.Remove(unmonitorSymbol);
-            }
+            _userConnectionManager.RemoveSymbolConnection(connectionId);
+           
             var value = await Task.FromResult(0);
         }
     }

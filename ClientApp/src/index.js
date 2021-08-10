@@ -7,11 +7,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import DataVisualize from './components/data-visualize';
+import DataVisualize from './components/DataVisualize';
 
 
-ReactDOM.render(<DataVisualize/>
-// {/* <App /> */}
+ReactDOM.render(
+// {/* <DataVisualize/> */}
+     <App /> 
     , document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
